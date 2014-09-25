@@ -1,22 +1,30 @@
 import groovy.time.TimeCategory
 
 class RateAdjuster {
-    def adjustFor(Date snapshotDate, List<Tuple> initialRates, Tuple current = new Tuple()) {
-        if(!current) {
+    def adjust(Date snapshotDate, List<Tuple> initialRates, List<Tuple> currentRates = []) {
+        if(!currentRates) {
             return initialRates
         }
 
-        def (currentDateRange, currentRate) = current
         def adjustedRates = []
+
         initialRates.each { dateRange, rate ->
             if (dateRange.contains(snapshotDate)) {
-                use(TimeCategory) {
-                    adjustedRates << new Tuple((dateRange.first()..snapshotDate.previous()), rate)
-                    adjustedRates << new Tuple((snapshotDate..currentDateRange.last()), currentRate)
-                }
+                adjustedRates << new Tuple((dateRange.first()..snapshotDate.previous()), rate)
             } else {
-                adjustedRates << new Tuple(dateRange, rate)
+                if(dateRange.last() < snapshotDate)
+                    adjustedRates << new Tuple(dateRange, rate)
             }
+        }
+
+        currentRates.each { dateRange, rate ->
+            if (dateRange.contains(snapshotDate)){
+                adjustedRates << new Tuple((snapshotDate..dateRange.last()), rate)
+            }else{
+                if ((dateRange.first() > snapshotDate))
+                    adjustedRates << new Tuple(dateRange, rate)
+            }
+
         }
         adjustedRates
     }
