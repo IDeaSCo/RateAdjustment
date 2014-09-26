@@ -3,7 +3,7 @@ import spock.lang.Specification
 class RateAdjusterSpecs extends Specification {
     private final ratesAdjuster = new RatesAdjuster()
 
-    def "inital rate does not produce any adjusted rate"() {
+    def "initial rate does not produce any adjusted rate"() {
         given: 'initial rate'
             def dateRange = (new Date('1-Jan-2014')..new Date('31-Dec-2014'))
             def rate = 230
@@ -36,13 +36,13 @@ class RateAdjusterSpecs extends Specification {
     }
 
     def "initial rates with 2 seasons produces adjusted rates for snapshot date in one of the seasons"() {
-        given: 'initial rate'
+        given: 'initial rate with 2 seasons'
             def firstSeason = (new Date('1-Jan-2014')..new Date('1-May-2014'))
             def secondSeason = (new Date('2-May-2014')..new Date('31-Dec-2014'))
             def initialRates = [new Tuple(firstSeason, 230),
                                 new Tuple(secondSeason, 150)]
 
-        and: 'current rate and snapshot date within the second season'
+        and: 'current rate and snapshot date falling in the second season'
             def currentRate = [new Tuple((new Date('1-Jan-2014')..new Date('31-Dec-2014')), 180)]
             def snapShotDate = new Date('3-May-2014')
 
@@ -62,8 +62,9 @@ class RateAdjusterSpecs extends Specification {
             def initialRates = [new Tuple(firstSeason, 230),
                                 new Tuple(secondSeason, 150)]
 
-        and: 'current rate and snapshot date within second shortened season'
-            def currentRate = [new Tuple((new Date('1-Jan-2014')..new Date('30-Nov-2014')), 180)]
+        and: 'current rate and snapshot date falling in second shortened season'
+            def shortenedSeason = (new Date('1-Jan-2014')..new Date('30-Nov-2014'))
+            def currentRate = [new Tuple(shortenedSeason, 180)]
             def snapShotDate = new Date('3-May-2014')
 
         when: 'I adjust the rates'
