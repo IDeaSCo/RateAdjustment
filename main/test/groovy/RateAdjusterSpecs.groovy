@@ -163,4 +163,29 @@ class RateAdjusterSpecs extends Specification {
         then: 'I should see the adjusted base rates without changes'
             adjustedRates == initialRates
     }
+
+    def "current rates containing changes outside of snapshot date seasons"() {
+        given: 'initial rate'
+            def firstSeason = (new Date('1-Jan-2014')..new Date('1-May-2014'))
+            def secondSeason = (new Date('2-May-2014')..new Date('15-Nov-2014'))
+            def thirdSeason = (new Date('16-Nov-2014')..new Date('31-Dec-2014'))
+            def initialRates = [new Tuple(firstSeason, 100),
+                                new Tuple(secondSeason, 200),
+                                new Tuple(thirdSeason, 300)]
+
+        and: 'current rate and snapshot date'
+            def currentfirstSeason = new Tuple(firstSeason, 180)
+            def currentSecondSeason = new Tuple(secondSeason,200)
+            def currentThirdSeason = new Tuple(thirdSeason, 380)
+            def currentRates = [currentfirstSeason, currentSecondSeason, currentThirdSeason]
+            def snapShotDate = new Date('10-May-2014')
+
+        when: 'I adjust the rates'
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRates)
+
+        then: 'I should see the adjusted base rates'
+            adjustedRates == [new Tuple(firstSeason,100),
+                              new Tuple(secondSeason,200),
+                              new Tuple((new Date('16-Nov-2014')..new Date('31-Dec-2014')), 380)]
+    }
 }
