@@ -99,7 +99,6 @@ class RateAdjusterSpecs extends Specification {
                               new Tuple((new Date('5-May-2014')..new Date('31-Dec-2014')), 280)]
     }
 
-
     def "initial and current rates with 3 seasons produces adjusted rates"() {
         given: 'initial rate'
             def firstSeason = (new Date('1-Jan-2014')..new Date('1-May-2014'))
@@ -124,5 +123,28 @@ class RateAdjusterSpecs extends Specification {
                           new Tuple((new Date('2-May-2014')..new Date('9-May-2014')), 200),
                           new Tuple((new Date('10-May-2014')..new Date('15-Nov-2014')), 280),
                           new Tuple((new Date('16-Nov-2014')..new Date('31-Dec-2014')), 380)]
+    }
+
+    def "initial and current rates with shortened seasons produces adjusted rates"() {
+        given: 'initial rate'
+            def firstSeason = (new Date('1-Jan-2014')..new Date('1-May-2014'))
+            def secondSeason = (new Date('2-May-2014')..new Date('31-Dec-2014'))
+            def initialRates = [new Tuple(firstSeason, 230),
+                                new Tuple(secondSeason, 150)]
+
+        and: 'current rate and snapshot date within second shortened season'
+            def currentFirstSeason = (new Date('1-Jan-2014')..new Date('1-May-2014'))
+            def currentSecondSeason = (new Date('2-May-2014')..new Date('15-Nov-2014'))
+            def currentRates = [new Tuple(currentFirstSeason, 180),
+                                new Tuple(currentSecondSeason, 280)]
+            def snapShotDate = new Date('5-May-2014')
+
+        when: 'I adjust the rates'
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRates)
+
+        then: 'I should see the adjusted base rates'
+            adjustedRates == [new Tuple(firstSeason, 230),
+                          new Tuple((new Date('2-May-2014')..new Date('4-May-2014')), 150),
+                          new Tuple((new Date('5-May-2014')..new Date('15-Nov-2014')), 280)]
     }
 }
