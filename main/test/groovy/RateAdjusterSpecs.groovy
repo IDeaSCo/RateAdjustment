@@ -1,7 +1,7 @@
 import spock.lang.Specification
 
 class RateAdjusterSpecs extends Specification {
-    private final rateAdjuster = new RateAdjuster()
+    private final ratesAdjuster = new RatesAdjuster()
 
     def "inital rate does not produce any adjusted rate"() {
         given: 'initial rate'
@@ -11,7 +11,7 @@ class RateAdjusterSpecs extends Specification {
 
         when: 'I adjust the rates for snapshot date'
             def snapshotDate = new Date('1-May-2014')
-            def adjustedRates = rateAdjuster.adjust(snapshotDate, initialRate)
+            def adjustedRates = ratesAdjuster.adjust(snapshotDate, initialRate)
 
         then: 'I should see initial rate as base rate'
           adjustedRates == initialRate
@@ -29,7 +29,7 @@ class RateAdjusterSpecs extends Specification {
             def currentRate = [new Tuple(dateRange, 150)]
 
         when: 'I adjust the rates for snapshot date'
-            def adjustedRates = this.rateAdjuster.adjust(snapshotDate, initialRate, currentRate)
+            def adjustedRates = this.ratesAdjuster.adjust(snapshotDate, initialRate, currentRate)
 
         then: 'I should see the adjusted base rates'
             adjustedRates == [new Tuple((new Date('1-Jan-2014')..new Date('1-May-2014')), 230),
@@ -48,7 +48,7 @@ class RateAdjusterSpecs extends Specification {
             def snapShotDate = new Date('3-May-2014')
 
         when: 'I adjust the rates'
-            def adjustedRates = rateAdjuster.adjust(snapShotDate, initialRates, currentRate)
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRate)
 
         then: 'I should see the adjusted base rates'
             adjustedRates == [new Tuple(firstSeason, 230),
@@ -68,7 +68,7 @@ class RateAdjusterSpecs extends Specification {
             def snapShotDate = new Date('3-May-2014')
 
         when: 'I adjust the rates'
-            def adjustedRates = rateAdjuster.adjust(snapShotDate, initialRates, currentRate)
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRate)
 
         then: 'I should see the adjusted base rates'
             adjustedRates == [new Tuple(firstSeason, 230),
@@ -84,13 +84,14 @@ class RateAdjusterSpecs extends Specification {
                                 new Tuple(secondSeason, 150)]
 
         and: 'current rate and snapshot date within second season'
-            def currentfirstSeason = new Tuple((new Date('1-Jan-2014')..new Date('1-May-2014')), 180)
-            def currentSecondSeason = new Tuple((new Date('2-May-2014')..new Date('31-Dec-2014')), 280)
-            def currentRates = [currentfirstSeason, currentSecondSeason]
+            def currentFirstSeason = (new Date('1-Jan-2014')..new Date('1-May-2014'))
+            def currentSecondSeason = (new Date('2-May-2014')..new Date('31-Dec-2014'))
+            def currentRates = [new Tuple(currentFirstSeason, 180),
+                                new Tuple(currentSecondSeason, 280)]
             def snapShotDate = new Date('5-May-2014')
 
         when: 'I adjust the rates'
-            def adjustedRates = rateAdjuster.adjust(snapShotDate, initialRates, currentRates)
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRates)
 
         then: 'I should see the adjusted base rates'
             adjustedRates == [new Tuple(firstSeason, 230),
@@ -108,7 +109,7 @@ class RateAdjusterSpecs extends Specification {
                                 new Tuple(secondSeason, 200),
                                 new Tuple(thirdSeason, 300)]
 
-        and: 'current rate and snapshot date within second shortened season'
+        and: 'current rate and snapshot date'
             def currentfirstSeason = new Tuple(firstSeason, 180)
             def currentSecondSeason = new Tuple(secondSeason, 280)
             def currentThirdSeason = new Tuple(thirdSeason, 380)
@@ -116,7 +117,7 @@ class RateAdjusterSpecs extends Specification {
             def snapShotDate = new Date('10-May-2014')
 
         when: 'I adjust the rates'
-            def adjustedRates = rateAdjuster.adjust(snapShotDate, initialRates, currentRates)
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRates)
 
         then: 'I should see the adjusted base rates'
             adjustedRates == [new Tuple(firstSeason, 100),
