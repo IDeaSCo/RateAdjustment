@@ -147,4 +147,20 @@ class RateAdjusterSpecs extends Specification {
                           new Tuple((new Date('2-May-2014')..new Date('4-May-2014')), 150),
                           new Tuple((new Date('5-May-2014')..new Date('15-Nov-2014')), 280)]
     }
+
+    def "initial and current rates without any changes"() {
+        given: 'initial rate'
+            def firstSeason = (new Date('1-Jan-2014')..new Date('1-Dec-2014'))
+            def initialRates = [new Tuple(firstSeason, 230)]
+
+        and: 'current rate and snapshot date without any changes'
+            def currentRates = initialRates
+            def snapShotDate = new Date('5-May-2014')
+
+        when: 'I adjust the rates'
+            def adjustedRates = ratesAdjuster.adjust(snapShotDate, initialRates, currentRates)
+
+        then: 'I should see the adjusted base rates without changes'
+            adjustedRates == initialRates
+    }
 }

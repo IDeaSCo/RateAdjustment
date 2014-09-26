@@ -4,6 +4,10 @@ class RatesAdjuster {
     private List<Tuple> splitRates(Date snapshotDate, Tuple initial, Tuple current) {
         def (initialDateRange, initialRate) = initial
         def (currentDateRange, currentRate) = current
+        if (initial == current) {
+            return [current]
+        }
+
         [
             new Tuple((initialDateRange.first()..snapshotDate.previous()), initialRate),
             new Tuple((snapshotDate..currentDateRange.last()), currentRate)
