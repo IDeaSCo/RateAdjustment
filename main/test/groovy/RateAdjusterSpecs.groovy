@@ -21,8 +21,7 @@ class RateAdjusterSpecs extends Specification {
     def "current rate produces adjusted rate"() {
         given: 'initial rate'
             def dateRange = (new Date('1-Jan-2014')..new Date('31-Dec-2014'))
-            def rate = 230
-            def initialRate = [new Tuple(dateRange, rate)]
+            def initialRate = [new Tuple(dateRange, 230)]
 
         and: 'current rate and snap shot date'
             def snapshotDate = new Date('2-May-2014')
