@@ -19,19 +19,15 @@ class RatesAdjuster {
             return initialRates
         }
 
-        def pastRatesWithSnapshot = initialRates.findAll { dateRange, rate ->
-            dateRange.last() < snapshotDate || dateRange.contains(snapshotDate)
+        def (pastRates, pastRatesWithSnapshot) = initialRates.split { dateRange, rate ->
+            dateRange.last() < snapshotDate
         }
-        def futureRatesWithSnapshot = currentRates.findAll { dateRange, rate ->
-            dateRange.first() > snapshotDate || dateRange.contains(snapshotDate)
+        def (futureRates, futureRatesWithSnapshot) = currentRates.split { dateRange, rate ->
+            dateRange.first() > snapshotDate
         }
-
-        def pastRateWithSnapshot = pastRatesWithSnapshot.last()
-        def futureRateWithSnapshot = futureRatesWithSnapshot.first()
+        def pastRateWithSnapshot = pastRatesWithSnapshot.first()
+        def futureRateWithSnapshot = futureRatesWithSnapshot.last()
         def splitRates = splitRates(snapshotDate, pastRateWithSnapshot, futureRateWithSnapshot)
-
-        def pastRates = pastRatesWithSnapshot.take(pastRatesWithSnapshot.size() - 1)
-        def futureRates = futureRatesWithSnapshot.tail()
         pastRates + splitRates + futureRates
     }
 }
